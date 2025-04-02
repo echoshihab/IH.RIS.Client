@@ -1,14 +1,15 @@
 <template>
   <main>
     <div class="search-form">
-      <v-text-field label="Patient Search"></v-text-field>
+      <v-text-field label="Patient Search" v-model="searchValue"></v-text-field>
       <v-select
         label="Select"
         :items="['MRN', 'HCN', 'Demographic Details']"
+        v-model="searchType"
         variant="outlined"
       ></v-select>
 
-      <v-btn @click="getPatient">Test</v-btn>
+      <v-btn @click="getPatient">Search</v-btn>
     </div>
   </main>
 </template>
@@ -22,9 +23,15 @@ let patientService = new PatientService()
 
 const patient = ref<Patient>()
 
+const searchValue = ref<string>()
+
+const searchType = ref<string>()
+
 async function getPatient() {
-  patient.value = await patientService.get(1)
-  console.log(patient.value)
+  if (searchType.value === 'MRN') {
+    patient.value = await patientService.get(searchValue.value)
+    console.log(patient.value)
+  }
 }
 </script>
 
