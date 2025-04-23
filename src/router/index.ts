@@ -8,6 +8,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: { title: 'Patient Search' },
     },
     {
       path: '/about',
@@ -18,6 +19,11 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue'),
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  document.title = (to.meta.title || 'IH') as string
+  next()
 })
 
 export default router
