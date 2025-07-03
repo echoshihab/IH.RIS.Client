@@ -5,7 +5,6 @@ import type { ContactPhone } from './ContactPhone'
 import type { Language } from './Language'
 
 export interface Patient extends IdentifiableData {
-  id?: string
   mrn: string
   gender: Gender
   birthYear: number

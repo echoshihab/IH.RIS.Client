@@ -31,7 +31,7 @@
     <v-btn @click="getPatient">Search</v-btn>
 
     <div class="mt-4">
-      <patient-list></patient-list>
+      <patient-list :patients="patients"></patient-list>
     </div>
   </main>
 </template>
@@ -58,6 +58,8 @@ const searchQuery = ref<SearchQuery>({
   birthDate: '',
 })
 
+const patients = ref<Patient[]>()
+
 const toggle = ref('mrn')
 
 const showAdvanced = computed(() => toggle.value == 'advanced')
@@ -75,8 +77,7 @@ async function getPatient() {
     patient.value = await patientService.get(searchValue.value)
     console.log(patient.value)
   } else {
-    let test = await patientService.query(searchQuery.value)
-    console.log(test)
+    patients.value = await patientService.query(searchQuery.value)
   }
 }
 </script>
