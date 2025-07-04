@@ -20,5 +20,9 @@
   </v-table>
 </template>
 <script setup lang="ts">
-const props = defineProps(['patients'])
+import type { Patient } from '@/Models/Patient'
+
+const props = defineProps<{
+  patients: Patient[]
+}>()
 </script>
