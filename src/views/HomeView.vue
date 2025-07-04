@@ -31,6 +31,7 @@
     <v-btn @click="getPatient">Search</v-btn>
 
     <div class="mt-4">
+      <v-skeleton-loader v-if="loader" type="table"></v-skeleton-loader>
       <patient-list :patients="patients"></patient-list>
     </div>
   </main>
@@ -58,9 +59,11 @@ const searchQuery = ref<SearchQuery>({
   birthDate: '',
 })
 
-const patients = ref<Patient[]>()
+const patients = ref<Patient[]>([])
 
 const toggle = ref('mrn')
+
+const loader = ref(false)
 
 const showAdvanced = computed(() => toggle.value == 'advanced')
 
@@ -73,12 +76,14 @@ const searchValue = ref<string>()
 const searchType = ref<string>()
 
 async function getPatient() {
+  loader.value = true
   if (toggle.value === 'mrn') {
     patient.value = await patientService.get(searchValue.value)
-    console.log(patient.value)
+    patients.value = patient.value ? [patient.value] : []
   } else {
-    patients.value = await patientService.query(searchQuery.value)
+    patients.value = (await patientService.query(searchQuery.value)) ?? []
   }
+  loader.value = false
 }
 </script>
 
