@@ -14,7 +14,14 @@
           {{ patient.name.firstName.toUpperCase() }}
         </td>
         <td>{{ patient.mrn }}</td>
-        <td><v-btn color="indigo-darken-3"> View </v-btn></td>
+        <td>
+          <v-btn
+            color="indigo-darken-3"
+            :to="{ name: 'PatientDetail', params: { mrn: patient.mrn } }"
+          >
+            View
+          </v-btn>
+        </td>
       </tr>
     </tbody>
   </v-table>
