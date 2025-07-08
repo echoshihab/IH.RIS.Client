@@ -42,6 +42,9 @@ import type { Patient } from '@/Models/Patient'
 import { PatientService } from '@/services/patientService'
 import { computed, ref } from 'vue'
 import PatientList from '@/components/PatientList.vue'
+import { usePatientStore } from '@/stores/patientStore'
+
+const patientStore = usePatientStore()
 
 type SearchQuery = {
   firstName: String
@@ -83,6 +86,7 @@ async function getPatient() {
   } else {
     patients.value = (await patientService.query(searchQuery.value)) ?? []
   }
+  patientStore.addPatients(patients.value)
   loader.value = false
 }
 </script>

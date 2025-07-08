@@ -13,8 +13,8 @@
     subtitle="The #1 Vue UI Library"
     width="400"
   >
-    <template v-slot:title>
-      <span class="font-weight-black">Patient MRN : {{ patientMrn }}</span>
+    <template v-slot:title v-if="patient">
+      <span class="font-weight-black">Patient MRN : {{ patient.mrn }}</span>
     </template>
 
     <v-card-text class="bg-surface-light pt-4">
@@ -26,12 +26,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { Patient } from '@/Models/Patient'
+import { usePatientStore } from '@/stores/patientStore'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-const loading = ref(true)
+const loading = ref(false)
 
 const route = useRoute()
 
-const patientMrn = route.params.mrn
+const patientStore = usePatientStore()
+
+const patient = ref<Patient>()
+
+onMounted(() => {
+  loading.value = true
+  patient.value = patientStore.getPatientByMrn(
+    route.params.mrn ? (route.params.mrn as string) : '',
+  )
+  loading.value = false
+})
 </script>
