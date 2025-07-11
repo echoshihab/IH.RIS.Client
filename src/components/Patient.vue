@@ -63,6 +63,15 @@
             v-text="getPatientFullName()"
           ></v-list-item-title>
         </v-list-item>
+        <v-list-item color="primary">
+          <template v-slot:prepend>
+            <v-label class="mr-2">DOB: </v-label>
+          </template>
+          <v-list-item-title
+            class="text-capitalize"
+            v-text="patientDob?.toLocaleDateString()"
+          ></v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-card-text>
     <v-btn
