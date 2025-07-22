@@ -8,9 +8,14 @@
     <v-progress-circular indeterminate color="primary" size="64" />
   </v-overlay>
 
-  <v-card class="mx-auto" prepend-icon="$vuetify" width="400" v-if="patient">
+  <v-card
+    class="mx-auto px-4 py-2"
+    prepend-icon="$vuetify"
+    width="400"
+    v-if="patient"
+  >
     <template v-slot:title>
-      <div class="d-flex justify-space-between">
+      <div class="d-flex justify-space-between" v-if="route.params.mrn !== '0'">
         <span class="font-weight-black">Patient MRN : {{ patient.mrn }}</span>
 
         <v-icon
@@ -74,20 +79,17 @@
         </v-list-item>
       </v-list>
     </v-card-text>
-    <v-btn
-      v-if="editMode"
-      class="d-flex justify-center"
-      color="indigo-darken-3"
-    >
-      Save
-    </v-btn>
+    <div class="d-flex justify-space-between">
+      <v-btn v-if="editMode" color="indigo-darken-3"> Save </v-btn>
+      <v-btn color="indigo-darken-3" :to="{ name: 'home' }"> Back </v-btn>
+    </div>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import type { Patient } from '@/Models/Patient'
+import { Patient } from '@/Models/Patient'
 import { usePatientStore } from '@/stores/patientStore'
-import { capitalize, computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const loading = ref(false)
@@ -105,7 +107,7 @@ const getPatientFullName = () =>
     .filter(v => !!v)
     .join(' ')
 
-const patient = ref<Patient>()
+const patient = ref<Patient>(new Patient())
 
 const editMode = ref(false)
 const toggleEditMode = function () {
@@ -131,9 +133,17 @@ const patientDob = computed({
 
 onMounted(() => {
   loading.value = true
-  patient.value = patientStore.getPatientByMrn(
-    route.params.mrn ? (route.params.mrn as string) : '',
-  )
+  const mrn = Number(route.params.mrn)
+  if (!isNaN(mrn)) {
+    if (mrn === 0) {
+      toggleEditMode()
+    } else {
+      patient.value = patientStore.getPatientByMrn(
+        route.params.mrn ? (route.params.mrn as string) : '',
+      )
+    }
+  }
+
   loading.value = false
 })
 </script>

@@ -1,9 +1,14 @@
 <template>
   <main>
-    <v-btn-toggle v-model="toggle" divided class="mb-4">
-      <v-btn value="mrn">Basic </v-btn>
-      <v-btn value="advanced">Advanced </v-btn>
-    </v-btn-toggle>
+    <div class="d-flex justify-space-between">
+      <v-btn-toggle v-model="toggle" divided class="mb-4">
+        <v-btn value="mrn">Basic </v-btn>
+        <v-btn value="advanced">Advanced </v-btn>
+      </v-btn-toggle>
+      <v-btn value="new" :to="{ name: 'PatientDetail', params: { mrn: 0 } }"
+        >Register</v-btn
+      >
+    </div>
     <v-form v-if="showAdvanced">
       <v-text-field
         label="First Name"
