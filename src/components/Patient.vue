@@ -53,6 +53,12 @@
         prepend-inner-icon="$calendar"
         v-model="patientDob"
       ></v-date-input>
+      <v-select
+        label="Gender"
+        v-model="patient.gender"
+        :items="Object.values(Gender)"
+      >
+      </v-select>
     </v-card-text>
 
     <v-card-text class="bg-surface-light pt-4 mb-2" v-else>
@@ -77,16 +83,26 @@
             v-text="patientDob?.toLocaleDateString()"
           ></v-list-item-title>
         </v-list-item>
+        <v-list-item color="primary">
+          <template v-slot:prepend>
+            <v-label class="mr-2">Gender: </v-label>
+          </template>
+          <v-list-item-title
+            class="text-capitalize"
+            v-text="Gender[patient.gender]"
+          ></v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-card-text>
     <div class="d-flex justify-space-between">
+      <v-btn color="indigo-lighten-5" :to="{ name: 'home' }"> Back </v-btn>
       <v-btn v-if="editMode" color="indigo-darken-3"> Save </v-btn>
-      <v-btn color="indigo-darken-3" :to="{ name: 'home' }"> Back </v-btn>
     </div>
   </v-card>
 </template>
 
 <script setup lang="ts">
+import { Gender } from '@/Enums/Gender'
 import { Patient } from '@/Models/Patient'
 import { usePatientStore } from '@/stores/patientStore'
 import { computed, onMounted, ref } from 'vue'
