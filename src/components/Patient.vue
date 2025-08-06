@@ -96,7 +96,9 @@
     </v-card-text>
     <div class="d-flex justify-space-between">
       <v-btn color="indigo-lighten-5" :to="{ name: 'home' }"> Back </v-btn>
-      <v-btn v-if="editMode" color="indigo-darken-3"> Save </v-btn>
+      <v-btn v-if="editMode" color="indigo-darken-3" @click="savePatient()">
+        Save
+      </v-btn>
     </div>
   </v-card>
 </template>
@@ -104,6 +106,7 @@
 <script setup lang="ts">
 import { Gender } from '@/Enums/Gender'
 import { Patient } from '@/Models/Patient'
+import { PatientService } from '@/services/patientService'
 import { usePatientStore } from '@/stores/patientStore'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -113,6 +116,7 @@ const loading = ref(false)
 const route = useRoute()
 
 const patientStore = usePatientStore()
+const patientService = new PatientService()
 
 const getPatientFullName = () =>
   [
@@ -124,6 +128,14 @@ const getPatientFullName = () =>
     .join(' ')
 
 const patient = ref<Patient>(new Patient())
+
+const savePatient = async function () {
+  try {
+    await patientService.post(patient.value)
+  } catch (ex) {
+    console.log(ex)
+  }
+}
 
 const editMode = ref(false)
 const toggleEditMode = function () {
