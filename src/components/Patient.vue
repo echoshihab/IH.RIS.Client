@@ -131,7 +131,9 @@ const patient = ref<Patient>(new Patient())
 
 const savePatient = async function () {
   try {
-    await patientService.post(patient.value)
+    patient.value.mrn
+      ? await patientService.put(patient.value.mrn, patient.value)
+      : await patientService.post(patient.value)
   } catch (ex) {
     console.log(ex)
   }
