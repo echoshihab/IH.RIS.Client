@@ -109,13 +109,13 @@ import { Patient } from '@/Models/Patient'
 import { PatientService } from '@/services/patientService'
 import { usePatientStore } from '@/stores/patientStore'
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const loading = ref(false)
 
 const route = useRoute()
+const router = useRouter()
 
-const patientStore = usePatientStore()
 const patientService = new PatientService()
 
 const getPatientFullName = () =>
@@ -134,6 +134,7 @@ const savePatient = async function () {
     patient.value.mrn
       ? await patientService.put(patient.value.mrn, patient.value)
       : await patientService.post(patient.value)
+    router.push({ name: 'PatientDetail', params: { mrn: patient.value.mrn } })
   } catch (ex) {
     console.log(ex)
   }
@@ -161,16 +162,18 @@ const patientDob = computed({
   },
 })
 
-onMounted(() => {
+onMounted(async () => {
   loading.value = true
   const mrn = Number(route.params.mrn)
   if (!isNaN(mrn)) {
     if (mrn === 0) {
       toggleEditMode()
     } else {
-      patient.value = patientStore.getPatientByMrn(
-        route.params.mrn ? (route.params.mrn as string) : '',
-      )
+      patient.value = await patientService.get(mrn)
+
+      // patient.value = patientStore.getPatientByMrn(
+      //   route.params.mrn ? (route.params.mrn as string) : '',
+      // )
     }
   }
 
