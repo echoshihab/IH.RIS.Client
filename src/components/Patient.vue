@@ -1,63 +1,24 @@
 <template>
-  <v-overlay
-    v-model="loading"
-    persistent
-    class="d-flex align-center justify-center"
-    scrim
-  >
+  <v-overlay v-model="loading" persistent class="d-flex align-center justify-center" scrim>
     <v-progress-circular indeterminate color="primary" size="64" />
   </v-overlay>
 
-  <v-card
-    class="mx-auto px-4 py-2"
-    prepend-icon="$vuetify"
-    width="400"
-    v-if="patient"
-  >
+  <v-card class="mx-auto px-4 py-2" prepend-icon="$vuetify" width="400" v-if="patient">
     <template v-slot:title>
       <div class="d-flex justify-space-between" v-if="route.params.mrn !== '0'">
         <span class="font-weight-black">Patient MRN : {{ patient.mrn }}</span>
 
-        <v-icon
-          color="teal-darken-2"
-          icon="mdi-eye"
-          size="small"
-          v-if="editMode"
-          @click="toggleEditMode"
-        ></v-icon>
-        <v-icon
-          v-else
-          color="teal-darken-2"
-          icon="mdi-account-edit"
-          size="small"
-          @click="toggleEditMode"
-        ></v-icon>
+        <v-icon color="teal-darken-2" icon="mdi-eye" size="small" v-if="editMode" @click="toggleEditMode"></v-icon>
+        <v-icon v-else color="teal-darken-2" icon="mdi-account-edit" size="small" @click="toggleEditMode"></v-icon>
       </div>
     </template>
     <v-card-text class="bg-surface-light pt-4 mb-2" v-if="editMode">
-      <v-text-field
-        label="First Name"
-        v-model="patient.name.firstName"
-      ></v-text-field>
-      <v-text-field
-        label="Middle Name"
-        v-model="patient.name.middleName"
-      ></v-text-field>
-      <v-text-field
-        label="Last Name"
-        v-model="patient.name.lastName"
-      ></v-text-field>
-      <v-date-input
-        label="Date of Birth"
-        prepend-icon=""
-        prepend-inner-icon="$calendar"
-        v-model="patientDob"
-      ></v-date-input>
-      <v-select
-        label="Gender"
-        v-model="patient.gender"
-        :items="Object.values(Gender)"
-      >
+      <v-text-field label="First Name" v-model="patient.name.firstName"></v-text-field>
+      <v-text-field label="Middle Name" v-model="patient.name.middleName"></v-text-field>
+      <v-text-field label="Last Name" v-model="patient.name.lastName"></v-text-field>
+      <v-date-input label="Date of Birth" prepend-icon="" prepend-inner-icon="$calendar"
+        v-model="patientDob"></v-date-input>
+      <v-select label="Gender" v-model="patient.gender" :items="Object.values(Gender)">
       </v-select>
     </v-card-text>
 
@@ -69,28 +30,19 @@
           <template v-slot:prepend>
             <v-label class="mr-2">Name: </v-label>
           </template>
-          <v-list-item-title
-            class="text-capitalize"
-            v-text="getPatientFullName()"
-          ></v-list-item-title>
+          <v-list-item-title class="text-capitalize" v-text="getPatientFullName()"></v-list-item-title>
         </v-list-item>
         <v-list-item color="primary">
           <template v-slot:prepend>
             <v-label class="mr-2">DOB: </v-label>
           </template>
-          <v-list-item-title
-            class="text-capitalize"
-            v-text="patientDob?.toLocaleDateString()"
-          ></v-list-item-title>
+          <v-list-item-title class="text-capitalize" v-text="patientDob?.toLocaleDateString()"></v-list-item-title>
         </v-list-item>
         <v-list-item color="primary">
           <template v-slot:prepend>
             <v-label class="mr-2">Gender: </v-label>
           </template>
-          <v-list-item-title
-            class="text-capitalize"
-            v-text="Gender[patient.gender]"
-          ></v-list-item-title>
+          <v-list-item-title class="text-capitalize" v-text="Gender[patient.gender]"></v-list-item-title>
         </v-list-item>
       </v-list>
     </v-card-text>
@@ -107,7 +59,6 @@
 import { Gender } from '@/Enums/Gender'
 import { Patient } from '@/Models/Patient'
 import { PatientService } from '@/services/patientService'
-import { usePatientStore } from '@/stores/patientStore'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -129,14 +80,21 @@ const getPatientFullName = () =>
 
 const patient = ref<Patient>(new Patient())
 
-const savePatient = async function () {
+const savePatient = async () => {
   try {
-    patient.value.mrn
-      ? await patientService.put(patient.value.mrn, patient.value)
-      : await patientService.post(patient.value)
-    router.push({ name: 'PatientDetail', params: { mrn: patient.value.mrn } })
+    const { mrn } = patient.value
+    const data = await (mrn
+      ? patientService.put(mrn, patient.value)
+      : patientService.post(patient.value))
+
+    if (data && data.mrn) {
+      loading.value = true
+      toggleEditMode()
+      router.push({ name: 'PatientDetail', params: { mrn: data.mrn } })
+      loading.value = false
+    }
   } catch (ex) {
-    console.log(ex)
+    console.error(ex)
   }
 }
 
